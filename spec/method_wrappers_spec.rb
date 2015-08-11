@@ -60,4 +60,22 @@ describe 'API method wrapper' do
       end
     end
   end
+  describe '#launch_url' do
+    before(:each) do 
+      WebMock.stub_request(:post, regexp_for('getclass')).to_return fixture('get_class_by_id')
+      @class = Braincert::LiveClass.find(6622)
+    end
+    it 'gets student launch url' do
+      WebMock.stub_request(:post, regexp_for('getclasslaunch')).to_return fixture('get_student_launchurl')
+      @class.launch_url(Braincert::LiveClass::STUDENT, 'newstudent').should == "https://api.braincert.com/live/launch.php?L0594CQcl3MDh5RSH6LdMdN46DD51z8ZRNBBzeROFWL5LsezCMRRMDlqcYWoOOHdgLztfJcSYIslgdhDDk6AFQ1S7lGLytAJy3/32Y8+x8YpDuzfYfH6Vx2ku43VLIz5EJNWC4twpXjGTmKI+5NNi68XOj+GdViz8Aa5mcgOlFM2IPoOOXC3NaFzYB63VVFzD7t4X8EXdlqItzcCCxyeDA=="
+    end
+    it 'gets teacher launch url' do
+      WebMock.stub_request(:post, regexp_for('getclasslaunch')).to_return fixture('get_teacher_launchurl')
+      @class.launch_url(Braincert::LiveClass::TEACHER, 'teacher').should == "https://api.braincert.com/live/launch.php?L0594CQcl3MDh5RSH6LdMdN46DD51z8ZRNBBzeROFWL5LsezCMRRMDlqcYWoOOHdunnKDzA7NYkkQMmBfiIdrx39gvd+rHKHLzO8w0DD54VprW0KCAzGWv/UrKLtc5sBgCntprOdSRXbMFuZ7nQOVat6AsZohALXYe5Uutf6kih5NSjmAHJw8uVucf3Tv755PLbKvzphDv8IZedaM5pauA=="
+    end
+    it 'gets an error' do
+      WebMock.stub_request(:post, regexp_for('getclasslaunch')).to_return fixture('get_launchurl_before_start')
+      @class.launch_url(Braincert::LiveClass::TEACHER, 'teacher').should == nil
+    end
+  end
 end

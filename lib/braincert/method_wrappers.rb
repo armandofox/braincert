@@ -63,6 +63,16 @@ module Braincert
       save or raise Braincert::LiveClass::SaveError, self.errors.full_messages.join(', ')
     end
 
+    # The launch_url accepts two parameters: a role (Teacher or Student) and the name to be
+    # displayed in the classroom
+    # might need to take into account isTeacher they might return different urls
+    # Request for launch_url can return an error response if the class did not start
+    def launch_url(role_in_classroom, username)
+      json_response = self.do_request('getclasslaunch', self.launch_url_params(role_in_classroom, username))
+      return nil if (json_response.nil? || json_response['status'] == 'error')
+      json_response['encryptedlaunchurl']
+    end
+
     # serialize to JSON for creation
 
     def attributes
@@ -86,6 +96,21 @@ module Braincert
         attrs['ispaid'] =  1
       end
       attrs
+    end
+
+    # serialize to JSON for launchurl request
+    # role should be either Braincert::LiveClass::STUDENT or Braincert::LiveClass::TEACHER
+
+    def launch_url_params(role, username)
+      {
+        'class_id' => id,
+        'user_id' => user_id,
+        'userName' => username,
+        'isTeacher' => role,
+        'lessonName' => title,
+        'courseName' => title,
+        'format' => 'json'
+      }
     end
   end
 

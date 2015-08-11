@@ -17,6 +17,10 @@ module Braincert
     
     class SaveError < RuntimeError ; end
 
+    # constants to represent teachers and students
+    LiveClass::STUDENT = 0
+    LiveClass::TEACHER = 1
+
     # Public attributes auto-assigned by API after creation
     attr_accessor :id, :user_id
     
@@ -43,8 +47,7 @@ module Braincert
 
     attr_accessor :date
     validates_format_of :date, :with => /\A\d\d\d\d-\d\d-\d\d\Z/
-
-
+    
     # Optional attributes on creation
     attr_accessor :currency, :ispaid, :is_recurring, :repeat, :end_classes_count, :end_date, :seat_attendees, :record, :format
 
